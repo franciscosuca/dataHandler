@@ -1,8 +1,11 @@
+# Setup Local Environment
 
+## Running Blob Containers locally
 
-Install Azurite
+### Install Azurite
 
 https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=visual-studio-code%2Cblob-storage#configure-azurite-extension-settings
 
-azure data exyplorere
+### Install Azure Data Explorer
+
 https://azure.microsoft.com/en-us/products/storage/storage-explorer#Download-4
