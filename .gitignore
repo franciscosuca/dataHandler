@@ -5,6 +5,12 @@
 local.settings.json
 .vscode
 
+# Azurite Storage Emulator
+__azurite*
+__blobstorage*
+__queuestorage*
+__tablestorage*
+
 # User-specific files
 *.suo
 *.user
