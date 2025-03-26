@@ -9,6 +9,12 @@ This will help you to run an emulator of a blob storage locally in your PC.
 
 - [Download Azurite](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=visual-studio-code%2Cblob-storage#configure-azurite-extension-settings)
 
+```npm install -g azurite```
+
+- Start azurite
+
+````azurite --silent --location c:\azurite --debug c:\azurite\debug.log````
+
 ### Azure Data Explorer
 
 With this tool you will be able to manage the containers used for your local test.

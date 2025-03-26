@@ -3,6 +3,7 @@
 
 # Local settings files
 local.settings.json
+c:azurite
 .vscode
 
 # Azurite Storage Emulator
