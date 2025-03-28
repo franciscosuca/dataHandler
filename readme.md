@@ -24,3 +24,7 @@ With this tool you will be able to manage the containers used for your local tes
 ---
 
 Learn more about blob-storage functions at [Microsoft Learn](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-trigger?tabs=python-v2%2Cisolated-process%2Cnodejs-v4%2Cextensionv5&pivots=programming-language-csharp)
+
+### Foot Note 
+
+- Version of Newtonsoft to avoid: versions before [13.0.1](https://www.cvedetails.com/vulnerability-list/vendor_id-34310/product_id-167663/Newtonsoft-Json.net.html)
