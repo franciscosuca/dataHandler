@@ -6,6 +6,7 @@ local.settings.json
 c:azurite
 .vscode
 azuriteconfig
+azurite
 
 # Azurite Storage Emulator
 __azurite*

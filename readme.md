@@ -35,7 +35,7 @@ This will help you to run an emulator of a blob storage locally in your PC.
 
 - Start azurite
 
-````azurite --silent --location c:\azurite --debug c:\azurite\debug.log````
+````azurite --silent --location azurite --debug azurite/debug.log````
 
 ### Setup Project
 
@@ -53,8 +53,12 @@ This will help you to run an emulator of a blob storage locally in your PC.
 
 Each parameter serves a specific purpose:
 - `AzureWebJobsSecretStorageType`: "Files" tells Azure Functions to store secrets in the local filesystem instead of Azure Key Vault
-- `f6bc32_STORAGE`: This is the connection string used by your BlobTrigger function to connect to the blob storage. It's referenced in your code via the `Connection` property in the BlobTrigger attribute
+- `f6bc32_STORAGE`: This is the connection string used by your contentTrigger function to connect to the blob storage. It's referenced in your code via the `Connection` property in the contentTrigger attribute
 - `AzureWebJobsStorage`: This is a required setting for Azure Functions runtime. It's used for managing function execution state, storing logs, and coordinating function execution
+
+## Run the function
+
+func start --dotnet-isolated
 
 ### Azure Data Explorer
 
@@ -62,7 +66,7 @@ Each parameter serves a specific purpose:
 
 - [Download Azura Data Explorere](https://azure.microsoft.com/en-us/products/storage/storage-explorer#Download-4)
 
-2. Create local blob-container. Name it after the string text on the first argument of "BlobTrigger", i.e., samples-workitems.
+2. Create local blob-container. Name it after the string text on the first argument of "contentTrigger", i.e., samples-workitems.
 
 ---
 
