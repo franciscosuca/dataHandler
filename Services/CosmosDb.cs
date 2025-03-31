@@ -1,19 +1,9 @@
 ﻿using Azure.Identity;
 using Microsoft.Azure.Cosmos;
 using personalSite.Models.Entities;
+using personalSite.Interfaces;
 
-namespace personalSite;
-
-// public record Experience(
-//     string Title,
-//     string Type,
-//     DateOnly Sdate,
-//     DateOnly Edate,
-//     string Company,
-//     string Location,
-//     string Summary,
-//     string SampleSkills
-// );
+namespace personalSite.Services;
 
 public class CosmosDb : ICosmosDb
 {
@@ -30,6 +20,11 @@ public class CosmosDb : ICosmosDb
 
         _databaseName = "OnlineCv";
         Console.WriteLine("Connected to CosmosDB");
+    }
+
+    public Task<string> Test()
+    {
+        return Task.FromResult("TEST");
     }
 
     public async Task<List<Experience>> GetItemsAsync(string containerName)
