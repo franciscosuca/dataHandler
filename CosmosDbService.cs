@@ -19,11 +19,6 @@ public class CosmosDbService
             accountEndpoint: "https://db-personal-site.documents.azure.com:443/",
             tokenCredential: credential);
         
-        //TODO create Role to overcome error 403: https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/security/how-to-grant-data-plane-role-based-access?tabs=built-in-definition%2Ccsharp&pivots=azure-interface-cli#assign-a-system-assigned-managed-identity-to-a-function-app
-
-        //TODO: remove this after testing the created role
-        // dbClient = new CosmosClient(
-        //     connectionString: "");
         onlineCvDatabase = dbClient.GetDatabase("OnlineCv");
         Console.WriteLine("Connected to CosmosDB");
     }

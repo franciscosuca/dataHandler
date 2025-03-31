@@ -19,6 +19,8 @@ Instead of relying on the connection strings for using or testing your applicati
 4. Verfiy assignment
 ```az cosmosdb sql role assignment list -g "resource_group" -a "db_account"```
 
+*Note*: for more information visit [MS Learn](https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/security/how-to-grant-data-plane-role-based-access?tabs=built-in-definition%2Ccsharp&pivots=azure-interface-cli#assign-a-system-assigned-managed-identity-to-a-function-app).
+
 # Setup Local Environment
 
 
@@ -29,7 +31,6 @@ Instead of relying on the connection strings for using or testing your applicati
 This will help you to run an emulator of a blob storage locally in your PC.
 
 - [Download Azurite](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=visual-studio-code%2Cblob-storage#configure-azurite-extension-settings)
-
 ```npm install -g azurite```
 
 - Start azurite
