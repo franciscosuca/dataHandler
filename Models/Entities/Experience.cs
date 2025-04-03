@@ -2,12 +2,13 @@ namespace personalSite.Models.Entities;
 
 public class Experience
 {
-    public string Title { get; set; } = string.Empty;
-    public string Type { get; set; } = string.Empty;
-    public string Sdate { get; set; } = string.Empty;
-    public string Edate { get; set; } = string.Empty;
-    public string Company { get; set; } = string.Empty;
-    public string Location { get; set; } = string.Empty;
-    public string Summary { get; set; } = string.Empty;
-    public string SampleSkills { get; set; } = string.Empty;
+    public string id { get; set; } = string.Empty;
+    public string title { get; set; } = string.Empty;
+    public string type { get; set; } = string.Empty;
+    public string sdate { get; set; } = string.Empty;
+    public string edate { get; set; } = string.Empty;
+    public string company { get; set; } = string.Empty;
+    public string location { get; set; } = string.Empty;
+    public string summary { get; set; } = string.Empty;
+    public string sampleSkills { get; set; } = string.Empty;
 }

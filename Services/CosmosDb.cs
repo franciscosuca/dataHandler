@@ -38,9 +38,6 @@ public class CosmosDb : ICosmosDb
             foreach (Experience experience in response)
             {
                 experiences.Add(experience);
-                //TODO: delete these lines after testing
-                Console.WriteLine(experience.Title);
-                Console.WriteLine(experience.Location);
             }
         }
         return experiences;
@@ -49,5 +46,13 @@ public class CosmosDb : ICosmosDb
     private Container GetContainer(string containerName)
     {
         return _cosmosClient.GetDatabase(_databaseName).GetContainer(containerName);
+    }
+    public async Task<Experience> CreateItemAsync(string containerName, Experience item)
+    {
+        Container container = GetContainer(containerName);
+        Experience createdExperience = await container.CreateItemAsync<Experience>(
+            item: item,
+            partitionKey: new PartitionKey(item.type));
+        return createdExperience;
     }
 }

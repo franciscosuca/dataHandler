@@ -2,6 +2,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Azure.WebJobs;
 using personalSite.Interfaces;
 using Microsoft.Extensions.Options;
+//TEMPORARY
+using personalSite.Models.Entities;
 
 namespace personalSite
 {
@@ -32,8 +34,20 @@ namespace personalSite
 
             // Examples of using the CosmosDB service
             //TODO: Create a new item in the Experience container
+            Experience experience = new Experience();
+            experience.id = "Test";
+            experience.title = "Test";
+            experience.type = "Test";
+            experience.sdate = "Test";
+            experience.edate = "Test";
+            experience.company = "Test";
+            experience.location = "Test";
+            experience.summary = "Test";
+            experience.sampleSkills = "Test";
+            await _cosmosDb.CreateItemAsync(_containerName, experience);
             //* Get all items from the Experience container
             var res = await _cosmosDb.GetItemsAsync(_containerName);
+            Console.WriteLine(res.Count);
             // Update an item in the Experience container
             // Get a single item from the Experience container
             // Delete an item from the Experience container
