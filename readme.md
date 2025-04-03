@@ -51,6 +51,8 @@ This will help you to run an emulator of a blob storage locally in your PC.
 }
 ```
 
+**NOTE**: Look at the file named example.local.settings.json for more details.
+
 Each parameter serves a specific purpose:
 - `AzureWebJobsSecretStorageType`: "Files" tells Azure Functions to store secrets in the local filesystem instead of Azure Key Vault
 - `f6bc32_STORAGE`: This is the connection string used by your contentTrigger function to connect to the blob storage. It's referenced in your code via the `Connection` property in the contentTrigger attribute
