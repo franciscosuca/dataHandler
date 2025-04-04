@@ -35,7 +35,9 @@ This will help you to run an emulator of a blob storage locally in your PC.
 
 - Start azurite
 
-````azurite --silent --location azurite --debug azurite/debug.log````
+```bash
+azurite --silent --location azurite --debug azurite/debug.log
+```
 
 ### Setup Project
 

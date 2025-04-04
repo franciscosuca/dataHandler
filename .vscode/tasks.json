@@ -63,7 +63,7 @@
 			},
 			"command": "start --dotnet-isolated",
 			"isBackground": true,
-			//"problemMatcher": "$func-dotnet-watch"
+			"problemMatcher": "$func-dotnet-watch"
 		}
 	]
 }
