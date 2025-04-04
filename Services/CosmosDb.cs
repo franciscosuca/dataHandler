@@ -3,6 +3,7 @@ using Microsoft.Azure.Cosmos;
 using personalSite.Models.Entities;
 using personalSite.Interfaces;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace personalSite.Services;
 
@@ -17,42 +18,62 @@ public class CosmosDb : ICosmosDb
         _dbConfiguration = dbConfiguration.Value;
         _databaseName = _dbConfiguration.Name;
 
-        Console.WriteLine("Connecting to CosmosDB");
         var credential = new DefaultAzureCredential();
         _cosmosClient = new CosmosClient(
             accountEndpoint: "https://db-personal-site.documents.azure.com:443/",
             tokenCredential: credential);
-
-        Console.WriteLine("Connected to CosmosDB");
     }
 
-    public async Task<List<Experience>> GetItemsAsync(string containerName)
+    public async Task<List<Experience>> GetExperiencesAsync(string containerName, IReadOnlyList<(string, PartitionKey)> items)
     {
-        string query = "SELECT * FROM c";
         List<Experience> experiences = new();
         Container container = GetContainer(containerName);
-        FeedIterator<Experience> results = container.GetItemQueryIterator<Experience>(query);
-        while (results.HasMoreResults)
-        {
-            FeedResponse<Experience> response = await results.ReadNextAsync();
-            foreach (Experience experience in response)
-            {
-                experiences.Add(experience);
-            }
-        }
-        return experiences;
+        FeedResponse<Experience> feedResponse = await container.ReadManyItemsAsync<Experience>(
+            items: items
+        );
+        foreach (Experience item in feedResponse)
+            experiences.Add(item);
+            return experiences;
     }
 
     private Container GetContainer(string containerName)
     {
         return _cosmosClient.GetDatabase(_databaseName).GetContainer(containerName);
     }
-    public async Task<Experience> CreateItemAsync(string containerName, Experience item)
+
+    public async Task<Experience> GetExperienceAsync(string containerName, Experience item)
     {
         Container container = GetContainer(containerName);
-        Experience createdExperience = await container.CreateItemAsync<Experience>(
+        Experience experience = await container.ReadItemAsync<Experience>(
+            id: item.id,
+            partitionKey: new PartitionKey(item.type));
+        return experience;
+    }
+    public async Task<Experience> CreateExperienceAsync(string containerName, Experience item)
+    {
+        Container container = GetContainer(containerName);
+        Experience createdExperience = await container.UpsertItemAsync<Experience>(
             item: item,
             partitionKey: new PartitionKey(item.type));
         return createdExperience;
+    }
+
+    public async Task<Experience> UpdateExperienceAsync(string containerName, Experience item)
+    {
+        Container container = GetContainer(containerName);
+        Experience updatedExperience = await container.ReplaceItemAsync<Experience>(
+            item: item,
+            id: item.id,
+            partitionKey: new PartitionKey(item.type));
+        return updatedExperience;
+    }
+
+    public async Task<Experience> DeleteExperienceAsync(string containerName, Experience item)
+    {
+        Container container = GetContainer(containerName);
+        Experience deletedExperience = await container.DeleteItemAsync<Experience>(
+            id: item.id,
+            partitionKey: new PartitionKey(item.type));
+        return deletedExperience;
     }
 }
