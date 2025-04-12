@@ -4,6 +4,7 @@ using personalSite.Interfaces;
 using Microsoft.Extensions.Options;
 //TEMPORARY
 using personalSite.Models.Entities;
+using System.Text.Json;
 using Microsoft.Azure.Cosmos;
 
 namespace personalSite{
@@ -28,35 +29,26 @@ namespace personalSite{
             //BLOB TRIGGER
             using var blobStreamReader = new StreamReader(stream);
             var content = await blobStreamReader.ReadToEndAsync();
-            //TODO: parse the content into an Experience object
 
-            //COSMOSDB SERVICE
-            //TODO: invoke a class that handles the logic for creating/modifying or deleting an experience from the db.
-            _containerName = _configuration.Container;
-
-            //!Section to be removed
-            Experience experience = new() { id = "Test", title = "Test", type = "research", sdate = "Test", edate = "Test", company = "Test", location = "Test", summary = "Test", sampleSkills = "Test" };
-            //* Create an item
-            await _cosmosDb.CreateExperienceAsync(_containerName, experience);
-            //* Get all items from the Experience container
-            PartitionKey pt = new("research");
-            List<(string, PartitionKey)> testItems = new()
+            try
             {
-                ("8be6d831-819d-4cb4-ab0f-79bc014ac397", pt),
-                ("Test", pt)
-            };         
-            List<Experience>exps = await _cosmosDb.GetExperiencesAsync(_containerName, (IReadOnlyList<(string, PartitionKey)>)testItems);
-            Console.WriteLine(exps);
-            //* Update an item in the Experience container
-            experience.title = "tasty test!";
-            await _cosmosDb.UpdateExperienceAsync(_containerName, experience);
-            //* Get a single item from the Experience container
-            var singleExperience = await _cosmosDb.GetExperienceAsync(_containerName, experience);
-            Console.WriteLine(singleExperience.title);
-            //* Delete an item from the Experience container
-            await _cosmosDb.DeleteExperienceAsync(_containerName, experience);
-            
+                var experienceChangeTriggered = JsonSerializer.Deserialize<Experience>(content);
+                if (experienceChangeTriggered != null)
+                {
+                    _containerName = _configuration.Container;
+                    //TODO: invoke a class that handles the logic for creating/modifying or deleting an experience from the db.
+                    var response = await _cosmosDb.CreateExperienceAsync(_containerName, experienceChangeTriggered);
+                }
+                else
+                    _logger.LogError("Failed to deserialize the content into an Experience object.");
+            }
+            catch (CosmosException e)
+            {
+                _logger.LogError("An Error occurred while running the function. Error message: {0}", e.Message);
+            }
+
             _logger.LogInformation("The function has completed its task!");
         }
+        //TODO: enable HTTP trigger for the frontend application.
     }
 }
