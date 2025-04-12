@@ -1,0 +1,21 @@
+{
+        "type": "research",
+        "sdate": "05.2021",
+        "edate": "10.2021",
+        "company": "Hochschule RHEIN-WAAL",
+        "location": "Germany",
+        "title": "Master Thesis: IoT service orchestration based on Kubernetes technology for computers with limited resources located in remote areas",
+        "summary": "Research that modernized the IoT architecture that a company owns, by adapting state of the art technology to their solution, such as: a container orchestration technology that runs in devices with limited resources; a monitoring system that allows the visualization of metrics collected from edge devices; and a CICD pipeline that improves the delivery of applications.",
+        "skills": "K3s;Prometheus;GitLab"
+}
+
+//!Section to be removed
+//* Get all items from the Experience container
+PartitionKey pt = new("research");
+List<(string, PartitionKey)> testItems = new()
+{
+    ("8be6d831-819d-4cb4-ab0f-79bc014ac397", pt),
+    ("Test", pt)
+};         
+List<Experience>exps = await _cosmosDb.GetExperiencesAsync(_containerName, (IReadOnlyList<(string, PartitionKey)>)testItems);
+Console.WriteLine(exps);

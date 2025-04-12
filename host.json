@@ -9,10 +9,10 @@
       "enableLiveMetricsFilters": true
     },
     "logLevel": {
-      "default": "Information",
-      "Host.Results": "Warning",
-      "Function": "Warning",
-      "Microsoft": "Warning"
+      "default": "Error",
+      "Host.Results": "Error",
+      "Function": "Error",
+      "Microsoft": "Error"
     }
   },
   "concurrency": {
