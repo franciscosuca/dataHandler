@@ -1,4 +1,3 @@
-
 using Microsoft.Extensions.Logging;
 using personalSite.Interfaces;
 using personalSite.Models.Entities;
@@ -34,29 +33,29 @@ public class ExperienceHandler: IExperienceHandler
     /// <exception cref="Exception">
     /// Thrown when an unexpected error occurs during the handling process.
     /// </exception>
-    public ExperienceHandler(ICosmosDb cosmosDb, string containerName)
+    public ExperienceHandler(ICosmosDb cosmosDb, string containerName, ILoggerFactory loggerFactory)
     {
         _cosmosDb = cosmosDb;
         _cosmosDbContainerName = containerName;
-        // _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = loggerFactory.CreateLogger<ExperienceHandler>();
     }
+
     //! Change the type returned by these tasks!
     public async Task<Experience> Handler(Experience experience)
     {
         if (string.IsNullOrEmpty(experience.id))
         {
             experience.id = Guid.NewGuid().ToString();
-            var result = await _cosmosDb.CreateExperienceAsync(_cosmosDbContainerName, experience);
-            // _logger.LogInformation($"Experience {experience.id} was created.");
-            return result;
+            var experienceResult = await _cosmosDb.CreateExperienceAsync(_cosmosDbContainerName, experience);
+            _logger.LogInformation($"Experience {experience.id} was created.");
+            return experienceResult;
             //! New experiences id will be updated in the blob after registered on the DB
         }
         else
         {
-            var result = await _cosmosDb.UpdateExperienceAsync(_cosmosDbContainerName, experience);
-            // _logger.LogInformation($"Experience {experience.id} was updated.");
-            return result;
-
+            var experienceResult = await _cosmosDb.UpdateExperienceAsync(_cosmosDbContainerName, experience);
+            _logger.LogInformation($"Experience {experience.id} was updated.");
+            return experienceResult;
         }
     }
 
@@ -66,6 +65,6 @@ public class ExperienceHandler: IExperienceHandler
         //TODO: identify what information the blob-triggers gives when the blob is deleted
         //TODO: then, delete the info in Cosmos
         await _cosmosDb.DeleteExperienceAsync(_cosmosDbContainerName, experience);
-        // _logger.LogInformation($"Experience {experience.id} was removed.");
+        _logger.LogInformation($"Experience {experience.id} was removed.");
     }
 }

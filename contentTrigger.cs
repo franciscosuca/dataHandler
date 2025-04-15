@@ -15,12 +15,18 @@ namespace personalSite
         private readonly ILogger<contentTrigger> _logger;
         private readonly ICosmosDb _cosmosDb;
         private readonly Configuration _configuration;
+        private readonly ILoggerFactory _loggerFactory;
 
-        public contentTrigger(ILogger<contentTrigger> logger, ICosmosDb cosmosDb, IOptions<Configuration> configuration)
+        public contentTrigger(
+            ILogger<contentTrigger> logger, 
+            ICosmosDb cosmosDb, 
+            IOptions<Configuration> configuration,
+            ILoggerFactory loggerFactory)
         {
             _logger = logger;
             _cosmosDb = cosmosDb;
             _configuration = configuration.Value;
+            _loggerFactory = loggerFactory;
         }
 
         [FunctionName(nameof(contentTrigger))]
@@ -29,7 +35,7 @@ namespace personalSite
             //BLOB TRIGGER
             using var blobStreamReader = new StreamReader(stream);
             var content = await blobStreamReader.ReadToEndAsync();
-            ExperienceHandler experienceHandler = new ExperienceHandler(_cosmosDb, _configuration.ContainerName);
+            ExperienceHandler experienceHandler = new ExperienceHandler(_cosmosDb, _configuration.ContainerName, _loggerFactory);
 
             try
             {
@@ -37,14 +43,15 @@ namespace personalSite
                 if (experienceChangeTriggered != null)
                 {
                     //TODO: chang the method name
-                    await experienceHandler.Handler(experienceChangeTriggered);
+                    var experienceResult = await experienceHandler.Handler(experienceChangeTriggered);
+                    //TODO: verify and add ID to the blob?
+                    
                 }
                 else
                 {
                     _logger.LogError("Failed to deserialize the content into an Experience object.");
                 }
 
-                //TODO: verify and add ID to the blob?
                 
                 //TODO: fix this, this will return null not any ID
                 // await experienceHandler.Remover(experienceChangeTriggered);
