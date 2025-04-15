@@ -6,15 +6,15 @@ using Microsoft.Extensions.Options;
 using personalSite.Models.Entities;
 using System.Text.Json;
 using Microsoft.Azure.Cosmos;
+using personalSite.Services;
 
-namespace personalSite{
-
+namespace personalSite
+{
     public class contentTrigger
     {
         private readonly ILogger<contentTrigger> _logger;
         private readonly ICosmosDb _cosmosDb;
         private readonly Configuration _configuration;
-        private string _containerName = string.Empty;
 
         public contentTrigger(ILogger<contentTrigger> logger, ICosmosDb cosmosDb, IOptions<Configuration> configuration)
         {
@@ -29,18 +29,26 @@ namespace personalSite{
             //BLOB TRIGGER
             using var blobStreamReader = new StreamReader(stream);
             var content = await blobStreamReader.ReadToEndAsync();
+            ExperienceHandler experienceHandler = new ExperienceHandler(_cosmosDb, _configuration.ContainerName);
 
             try
             {
                 var experienceChangeTriggered = JsonSerializer.Deserialize<Experience>(content);
                 if (experienceChangeTriggered != null)
                 {
-                    _containerName = _configuration.Container;
-                    //TODO: invoke a class that handles the logic for creating/modifying or deleting an experience from the db.
-                    var response = await _cosmosDb.CreateExperienceAsync(_containerName, experienceChangeTriggered);
+                    //TODO: chang the method name
+                    await experienceHandler.Handler(experienceChangeTriggered);
                 }
                 else
+                {
                     _logger.LogError("Failed to deserialize the content into an Experience object.");
+                }
+
+                //TODO: verify and add ID to the blob?
+                
+                //TODO: fix this, this will return null not any ID
+                // await experienceHandler.Remover(experienceChangeTriggered);
+
             }
             catch (CosmosException e)
             {
