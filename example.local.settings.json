@@ -7,7 +7,7 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "CosmosDb:Endpoint": "",
     "CosmosDb:Name": "",
-    "CosmosDb:Container": "",
+    "CosmosDb:ContainerName": "",
     "Functions:Worker:HostEndpoint": "http://localhost:7071"
   }
 }
