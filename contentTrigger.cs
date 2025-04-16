@@ -2,11 +2,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Azure.WebJobs;
 using personalSite.Interfaces;
 using Microsoft.Extensions.Options;
-//TEMPORARY
 using personalSite.Models.Entities;
 using System.Text.Json;
-using Microsoft.Azure.Cosmos;
 using personalSite.Services;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using System.Text;
 
 namespace personalSite
 {
@@ -42,28 +43,45 @@ namespace personalSite
                 var experienceChangeTriggered = JsonSerializer.Deserialize<Experience>(content);
                 if (experienceChangeTriggered != null)
                 {
-                    //TODO: chang the method name
+                    //TODO: check memory consumption of the function
                     var experienceResult = await experienceHandler.Handler(experienceChangeTriggered);
-                    //TODO: verify and add ID to the blob?
+                    //TODO: if experience already has .id do not go trhough the blob update
+                    //TODO: move blob logic to a class
+                    experienceChangeTriggered = experienceResult;
                     
+                    // Get connection string from app settings
+                    var connectionString = Environment.GetEnvironmentVariable("f6bc32_STORAGE");
+                    var blobServiceClient = new BlobServiceClient(connectionString);
+                    var containerClient = blobServiceClient.GetBlobContainerClient("samples-workitems");
+                    var blobClient = containerClient.GetBlobClient(name);
+
+                    // Serialize the updated content
+                    var updatedContent = JsonSerializer.Serialize(experienceChangeTriggered);
+                    byte[] byteArray = Encoding.UTF8.GetBytes(updatedContent);
+                    using var memoryStream = new MemoryStream(byteArray);
+
+                    // Get current blob properties to get the ETag
+                    var properties = await blobClient.GetPropertiesAsync();
+                    var conditions = new BlobRequestConditions
+                    {
+                        IfMatch = properties.Value.ETag
+                    };
+
+                    // Upload with conditions - single attempt
+                    await blobClient.UploadAsync(memoryStream, conditions: conditions);
                 }
                 else
                 {
                     _logger.LogError("Failed to deserialize the content into an Experience object.");
                 }
-
-                
-                //TODO: fix this, this will return null not any ID
-                // await experienceHandler.Remover(experienceChangeTriggered);
-
             }
-            catch (CosmosException e)
+            catch (Exception e)
             {
-                _logger.LogError("An Error occurred while running the function. Error message: {0}", e.Message);
+                _logger.LogError($"An Error occurred while running the function. Error message: {e.Message}");
+                throw;
             }
 
-            _logger.LogInformation("The function has completed its task!");
+            _logger.LogDebug("The function has completed its task!");
         }
-        //TODO: enable HTTP trigger for the frontend application.
     }
 }
