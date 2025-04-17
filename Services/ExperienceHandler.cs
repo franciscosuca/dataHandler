@@ -13,9 +13,6 @@ public class ExperienceHandler: IExperienceHandler
     /// <summary>
     /// Handles the creation, modification, or deletion of an experience in the database.
     /// </summary>
-    /// <param name="experience">
-    /// The <see cref="Experience"/> object containing the details of the experience to be processed.
-    /// </param>
     /// <remarks>
     /// This method performs the following actions based on the state of the experience:
     /// <list type="bullet">
@@ -30,9 +27,6 @@ public class ExperienceHandler: IExperienceHandler
     /// </item>
     /// </list>
     /// </remarks>
-    /// <exception cref="Exception">
-    /// Thrown when an unexpected error occurs during the handling process.
-    /// </exception>
     public ExperienceHandler(ICosmosDb cosmosDb, string containerName, ILoggerFactory loggerFactory)
     {
         _cosmosDb = cosmosDb;
@@ -40,8 +34,7 @@ public class ExperienceHandler: IExperienceHandler
         _logger = loggerFactory.CreateLogger<ExperienceHandler>();
     }
 
-    //! Change the type returned by these tasks!
-    public async Task<Experience> Handler(Experience experience)
+    public async Task<Experience> CreateUpdate(Experience experience)
     {
         if (string.IsNullOrEmpty(experience.id))
         {
@@ -49,7 +42,6 @@ public class ExperienceHandler: IExperienceHandler
             Experience experienceResult = await _cosmosDb.CreateExperienceAsync(_cosmosDbContainerName, experience);
             _logger.LogInformation($"Experience {experience.id} was created.");
             return experienceResult;
-            //! New experiences id will be updated in the blob after registered on the DB
         }
         else
         {
