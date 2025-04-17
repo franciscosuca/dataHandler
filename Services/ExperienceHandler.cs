@@ -46,14 +46,14 @@ public class ExperienceHandler: IExperienceHandler
         if (string.IsNullOrEmpty(experience.id))
         {
             experience.id = Guid.NewGuid().ToString();
-            var experienceResult = await _cosmosDb.CreateExperienceAsync(_cosmosDbContainerName, experience);
+            Experience experienceResult = await _cosmosDb.CreateExperienceAsync(_cosmosDbContainerName, experience);
             _logger.LogInformation($"Experience {experience.id} was created.");
             return experienceResult;
             //! New experiences id will be updated in the blob after registered on the DB
         }
         else
         {
-            var experienceResult = await _cosmosDb.UpdateExperienceAsync(_cosmosDbContainerName, experience);
+            Experience experienceResult = await _cosmosDb.UpdateExperienceAsync(_cosmosDbContainerName, experience);
             _logger.LogInformation($"Experience {experience.id} was updated.");
             return experienceResult;
         }

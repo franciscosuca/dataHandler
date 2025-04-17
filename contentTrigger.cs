@@ -8,6 +8,8 @@ using personalSite.Services;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using System.Text;
+using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace personalSite
 {
@@ -44,31 +46,33 @@ namespace personalSite
                 if (experienceChangeTriggered != null)
                 {
                     //TODO: check memory consumption of the function
-                    var experienceResult = await experienceHandler.Handler(experienceChangeTriggered);
-                    //TODO: if experience already has .id do not go trhough the blob update
+                    Experience experienceResult = await experienceHandler.Handler(experienceChangeTriggered);
                     //TODO: move blob logic to a class
-                    experienceChangeTriggered = experienceResult;
-                    
-                    // Get connection string from app settings
-                    var connectionString = Environment.GetEnvironmentVariable("f6bc32_STORAGE");
-                    var blobServiceClient = new BlobServiceClient(connectionString);
-                    var containerClient = blobServiceClient.GetBlobContainerClient("samples-workitems");
-                    var blobClient = containerClient.GetBlobClient(name);
+                    if (string.IsNullOrEmpty(experienceResult.id))
+                    {    
+                        experienceChangeTriggered = experienceResult;
+                        
+                        // Get connection string from app settings
+                        var connectionString = Environment.GetEnvironmentVariable("f6bc32_STORAGE");
+                        var blobServiceClient = new BlobServiceClient(connectionString);
+                        var containerClient = blobServiceClient.GetBlobContainerClient("samples-workitems");
+                        var blobClient = containerClient.GetBlobClient(name);
 
-                    // Serialize the updated content
-                    var updatedContent = JsonSerializer.Serialize(experienceChangeTriggered);
-                    byte[] byteArray = Encoding.UTF8.GetBytes(updatedContent);
-                    using var memoryStream = new MemoryStream(byteArray);
+                        // Serialize the updated content
+                        var updatedContent = JsonSerializer.Serialize(experienceChangeTriggered);
+                        byte[] byteArray = Encoding.UTF8.GetBytes(updatedContent);
+                        using var memoryStream = new MemoryStream(byteArray);
 
-                    // Get current blob properties to get the ETag
-                    var properties = await blobClient.GetPropertiesAsync();
-                    var conditions = new BlobRequestConditions
-                    {
-                        IfMatch = properties.Value.ETag
-                    };
+                        // Get current blob properties to get the ETag
+                        var properties = await blobClient.GetPropertiesAsync();
+                        var conditions = new BlobRequestConditions
+                        {
+                            IfMatch = properties.Value.ETag
+                        };
 
-                    // Upload with conditions - single attempt
-                    await blobClient.UploadAsync(memoryStream, conditions: conditions);
+                        // Upload with conditions - single attempt
+                        await blobClient.UploadAsync(memoryStream, conditions: conditions);
+                    }
                 }
                 else
                 {
