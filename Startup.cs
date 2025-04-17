@@ -13,6 +13,7 @@ public class Startup : FunctionsStartup
     {
         builder.Services.AddScoped<IExperienceHandler, ExperienceHandler>();
         builder.Services.AddScoped<ICosmosDb, CosmosDb>();
+        builder.Services.AddScoped<BlobService>();
         builder.Services.AddOptions<Configuration>()
             .Configure<IConfiguration>((settings, configuration) =>
             {
