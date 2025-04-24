@@ -11,7 +11,7 @@
     "logLevel": {
       "default": "Error",
       "Host.Results": "Error",
-      "Function": "Error",
+      "Function": "Information",
       "Microsoft": "Error"
     }
   },
