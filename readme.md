@@ -60,6 +60,22 @@ Each parameter serves a specific purpose:
 - `f6bc32_STORAGE`: This is the connection string used by your contentTrigger function to connect to the blob storage. It's referenced in your code via the `Connection` property in the contentTrigger attribute
 - `AzureWebJobsStorage`: This is a required setting for Azure Functions runtime. It's used for managing function execution state, storing logs, and coordinating function execution
 
+### Setup Event Grid (Cloud)
+
+In order to delete the experiences from the database when they are removed from the blob storage, an event grid should be setup.
+
+1. Add an Event Grid subscription in Azure that will send blob deletion events to your new HandleBlobDeletion function. You'll need to:
+
+- Create an Event Grid Topic in Azure
+- Configure your Storage Account to send events to this topic
+- Create a subscription that forwards events to your Azure Function
+
+2. Update your local.settings.json to add the Event Grid local endpoint. Add this setting:
+
+```
+"AzureWebJobs.HandleBlobDeletion.Type": "eventGrid"
+```
+
 ## Run the function
 
 func start --dotnet-isolated
