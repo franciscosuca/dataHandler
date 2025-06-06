@@ -9,5 +9,4 @@ public interface ICosmosDb
     Task<Experience> GetExperienceAsync(string containerName, Experience item);
     Task<Experience> CreateExperienceAsync(string containerName, Experience item);
     Task<Experience> UpdateExperienceAsync(string containerName, Experience item);
-    Task<Experience> DeleteExperienceAsync(string containerName, Experience item);
 }

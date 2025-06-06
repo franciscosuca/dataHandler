@@ -7,9 +7,6 @@ using personalSite.Models.Entities;
 using System.Text.Json;
 using personalSite.Services;
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Azure.Messaging.EventGrid;
-using Azure.Messaging.EventGrid.SystemEvents;
 
 namespace personalSite
 {
@@ -57,12 +54,13 @@ namespace personalSite
             }
             catch (Azure.RequestFailedException ex) when (ex.Status == 404)
             {
-                _logger.LogInformation($"Blob {name} was deleted, removing corresponding experience...");
-                // Extract the ID from the filename (removing .json extension)
-                string experienceId = Path.GetFileNameWithoutExtension(name);
-                var experience = new Experience { id = experienceId };
-                await experienceHandler.Remover(experience);
-                return;
+                _logger.LogInformation($"Blob {name} does not exist. It may have been deleted.");
+                return; // Exit if the blob does not exist
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while trying to access the blob: {ex.Message}");
+                throw;
             }
 
             // If we get here, the blob exists and we're handling a create/update
@@ -96,30 +94,6 @@ namespace personalSite
             }
 
             _logger.LogInformation("The function has completed its task!");
-        }
-
-        [FunctionName("HandleBlobDeletion")]
-        public async Task HandleBlobDeletion([EventGridTrigger] EventGridEvent eventGridEvent)
-        {
-            ExperienceHandler experienceHandler = new ExperienceHandler(_cosmosDb, _configuration.ContainerName, _loggerFactory);
-
-            if (eventGridEvent.EventType == SystemEventNames.StorageBlobDeleted)
-            {
-                var blobDeletedEvent = eventGridEvent.Data.ToObjectFromJson<StorageBlobDeletedEventData>();
-                
-                // Extract the blob name from the URL
-                string blobUrl = blobDeletedEvent.Url;
-                string blobName = Path.GetFileName(new Uri(blobUrl).LocalPath);
-                
-                _logger.LogInformation($"Detected deletion of blob: {blobName}");
-
-                // Get the experience ID from the blob name (removing .json extension)
-                string experienceId = Path.GetFileNameWithoutExtension(blobName);
-                var experience = new Experience { id = experienceId };
-                
-                await experienceHandler.Remover(experience);
-                _logger.LogInformation($"Successfully processed deletion of experience {experienceId}");
-            }
         }
     }
 }

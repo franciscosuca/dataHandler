@@ -50,13 +50,4 @@ public class ExperienceHandler: IExperienceHandler
             return experienceResult;
         }
     }
-
-    //TODO: check if this should actually exists on the mehtod above
-    public async Task Remover(Experience experience)
-    {
-        //TODO: identify what information the blob-triggers gives when the blob is deleted
-        //TODO: then, delete the info in Cosmos
-        await _cosmosDb.DeleteExperienceAsync(_cosmosDbContainerName, experience);
-        _logger.LogInformation($"Experience {experience.id} was removed.");
-    }
 }
