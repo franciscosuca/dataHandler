@@ -6,6 +6,17 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:azureFunctions.pickProcess}"
+        },
+        {
+            "name": "Launch Azure Functions (Debug)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "clean, restore & build (functions)",
+            "program": "${workspaceFolder}/bin/Debug/net8.0/dataHandler.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/bin/Debug/net8.0",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
         }
     ]
 }

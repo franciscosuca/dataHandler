@@ -13,6 +13,17 @@
 			"problemMatcher": "$msCompile"
 		},
 		{
+			"label": "restore (functions)",
+			"command": "dotnet",
+			"args": [
+				"restore"
+			],
+			"type": "process",
+			"dependsOn": "clean (functions)",
+			"group": "build",
+			"problemMatcher": "$msCompile"
+		},
+		{
 			"label": "build (functions)",
 			"command": "dotnet",
 			"args": [
@@ -21,12 +32,22 @@
 				"/consoleloggerparameters:NoSummary"
 			],
 			"type": "process",
-			"dependsOn": "clean (functions)",
+			"dependsOn": "restore (functions)",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
 			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "clean, restore & build (functions)",
+			"dependsOn": [
+				"clean (functions)",
+				"restore (functions)",
+				"build (functions)"
+			],
+			"dependsOrder": "sequence",
+			"group": "build"
 		},
 		{
 			"label": "clean release (functions)",
