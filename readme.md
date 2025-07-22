@@ -63,11 +63,16 @@ Each parameter serves a specific purpose:
 
 ## Run the function
 
-Run the command below
+### 1. Method CLI: Run the command below
 
 ```
 func start --dotnet-isolated
 ```
+### 2. Method UI: Run the process below
+
+- Press Ctrl+Shift+P
+- Type "Tasks: Run Task"
+- Select "func: host start"
 
 ### Azure Data Explorer
 

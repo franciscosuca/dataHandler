@@ -78,11 +78,12 @@
 		},
 		{
 			"type": "func",
+			"label": "func: host start",
 			"dependsOn": "build (functions)",
 			"options": {
-				"cwd": "${workspaceFolder}/bin/Debug/net8.0"
+				"cwd": "${workspaceFolder}"
 			},
-			"command": "start --dotnet-isolated",
+			"command": "host start --dotnet-isolated",
 			"isBackground": true,
 			"problemMatcher": "$func-dotnet-watch"
 		}
