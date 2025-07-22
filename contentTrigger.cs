@@ -5,7 +5,6 @@ using Microsoft.Extensions.Options;
 using personalSite.Models.Entities;
 using System.Text.Json;
 using personalSite.Services;
-using Azure.Storage.Blobs;
 
 namespace personalSite
 {
@@ -29,11 +28,10 @@ namespace personalSite
         }
         private const string _containerName = "onlinecv";
 
-        //TODO: fix debugger
-        //TODO: check why blob updates is duplicating entries in the database. Aparrently IDs are not being set in the blob.
         [FunctionName(nameof(contentTrigger))]
         public async Task Run(
-            [BlobTrigger(_containerName + "/{name}", Connection = "f6bc32_STORAGE")] Stream stream,
+            [BlobTrigger(_containerName + "/{name}",
+            Connection = "f6bc32_STORAGE")] Stream stream,
             string name)
         {
             ExperienceHandler experienceHandler = new ExperienceHandler(_cosmosDb, _configuration.ContainerName, _loggerFactory);
@@ -44,30 +42,6 @@ namespace personalSite
                 throw new Exception("No Connection String for the blob container found.");
             }
 
-            //! REMOVE
-            // Create a BlobServiceClient
-            var blobServiceClient = new BlobServiceClient(BlobConnectionString);
-            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
-            var blobClient = containerClient.GetBlobClient(name);
-
-            // Try to get blob properties - if we can't, it means the blob was deleted
-            try
-            {
-                await blobClient.GetPropertiesAsync();
-            }
-            catch (Azure.RequestFailedException ex) when (ex.Status == 404)
-            {
-                _logger.LogInformation($"Blob {name} does not exist. It may have been deleted.");
-                return; // Exit if the blob does not exist
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"An error occurred while trying to access the blob: {ex.Message}");
-                throw;
-            }
-            //! REMOVE
-
-            // If we get here, the blob exists and we're handling a create/update
             using var blobStreamReader = new StreamReader(stream);
             var content = await blobStreamReader.ReadToEndAsync();
 
@@ -78,12 +52,18 @@ namespace personalSite
                 var experienceChangeTriggered = JsonSerializer.Deserialize<Experience>(content);
                 if (experienceChangeTriggered != null)
                 {
-                    Experience experienceResult = await experienceHandler.CreateUpdate(experienceChangeTriggered);
+                    Experience experienceResult;
 
-                    if (string.IsNullOrEmpty(experienceResult.id))
+                    if (string.IsNullOrEmpty(experienceChangeTriggered.id))
                     {
-                        experienceChangeTriggered = experienceResult;
-                        await blobService.Update(name, experienceChangeTriggered);
+                        experienceResult = await experienceHandler.Create(experienceChangeTriggered);
+                        await blobService.Update(name, experienceResult); // Only update the blob when creating a new experience to add the ID
+                        _logger.LogInformation($"Experience {experienceResult.id} was created successfully.");
+                    }
+                    else
+                    {
+                        experienceResult = await experienceHandler.Update(experienceChangeTriggered);
+                        _logger.LogInformation($"Experience {experienceResult.id} was processed successfully.");
                     }
                 }
                 else
