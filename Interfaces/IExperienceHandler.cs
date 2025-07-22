@@ -4,6 +4,6 @@ namespace personalSite.Interfaces;
 
 public interface IExperienceHandler
 {
-    public Task<Experience> CreateUpdate(Experience experience);
-    public Task Remover(Experience experience);
+    public Task<Experience> Create(Experience experience);
+    public Task<Experience> Update(Experience experience);
 }

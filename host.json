@@ -1,5 +1,10 @@
 {
   "version": "2.0",
+  "extensions": {
+    "blobs": {
+      "maxDegreeOfParallelism": 1
+    }
+  },
   "logging": {
     "applicationInsights": {
       "samplingSettings": {

@@ -4,7 +4,7 @@ using personalSite.Models.Entities;
 
 namespace personalSite.Services;
 
-public class ExperienceHandler: IExperienceHandler
+public class ExperienceHandler : IExperienceHandler
 {
     private readonly ILogger<ExperienceHandler> _logger;
     private readonly ICosmosDb _cosmosDb;
@@ -34,29 +34,19 @@ public class ExperienceHandler: IExperienceHandler
         _logger = loggerFactory.CreateLogger<ExperienceHandler>();
     }
 
-    public async Task<Experience> CreateUpdate(Experience experience)
+    public async Task<Experience> Create(Experience experience)
     {
-        if (string.IsNullOrEmpty(experience.id))
-        {
-            experience.id = Guid.NewGuid().ToString();
-            Experience experienceResult = await _cosmosDb.CreateExperienceAsync(_cosmosDbContainerName, experience);
-            _logger.LogInformation($"Experience {experience.id} was created.");
-            return experienceResult;
-        }
-        else
-        {
-            Experience experienceResult = await _cosmosDb.UpdateExperienceAsync(_cosmosDbContainerName, experience);
-            _logger.LogInformation($"Experience {experience.id} was updated.");
-            return experienceResult;
-        }
+        experience.id = Guid.NewGuid().ToString();
+        Experience experienceResult = await _cosmosDb.CreateExperienceAsync(_cosmosDbContainerName, experience);
+        _logger.LogInformation($"Experience {experience.id} was created.");
+        return experienceResult;
+        
     }
 
-    //TODO: check if this should actually exists on the mehtod above
-    public async Task Remover(Experience experience)
+    public async Task<Experience> Update(Experience experience)
     {
-        //TODO: identify what information the blob-triggers gives when the blob is deleted
-        //TODO: then, delete the info in Cosmos
-        await _cosmosDb.DeleteExperienceAsync(_cosmosDbContainerName, experience);
-        _logger.LogInformation($"Experience {experience.id} was removed.");
+        Experience experienceResult = await _cosmosDb.UpdateExperienceAsync(_cosmosDbContainerName, experience);
+        _logger.LogInformation($"Experience {experience.id} was updated.");
+        return experienceResult;
     }
 }
