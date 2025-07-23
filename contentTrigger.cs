@@ -35,6 +35,7 @@ namespace personalSite
             string name)
         {
             ExperienceHandler experienceHandler = new ExperienceHandler(_cosmosDb, _configuration.ContainerName, _loggerFactory);
+            //TODO: replace the f6bc32_STORAGE for AzureWebJobsStorage
             string? BlobConnectionString = Environment.GetEnvironmentVariable("f6bc32_STORAGE");
 
             if (string.IsNullOrEmpty(BlobConnectionString))
